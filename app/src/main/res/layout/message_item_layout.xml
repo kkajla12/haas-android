@@ -23,24 +23,29 @@
             android:id="@+id/body1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:maxWidth="@dimen/max_chat_bubble_width"
             android:layout_gravity="center"
             android:layout_margin="5dip"
-            android:background="@drawable/bubble_b"
-            android:paddingLeft="10dip"
-            android:textColor="#000000"
-            android:textColorLink="#000000"
-            android:visibility= "gone">
-        </TextView>
+            android:background="@drawable/rounded_corner_b"
+            android:textSize="18sp"
+            android:visibility= "gone"
+            android:paddingLeft="10dp"
+            android:paddingTop="10dp"
+            android:paddingRight="10dp"
+            android:paddingBottom="10dp" />
 
         <TextView
             android:id="@+id/body"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="5dip"
-            android:background="@drawable/bubble_b"
-            android:paddingLeft="10dip"
-            android:textColor="#000000"
-            android:textColorLink="#000000" />
+            android:maxWidth="@dimen/max_chat_bubble_width"
+            android:layout_margin="10dip"
+            android:background="@drawable/rounded_corner"
+            android:textSize="18sp"
+            android:paddingLeft="10dp"
+            android:paddingTop="10dp"
+            android:paddingRight="10dp"
+            android:paddingBottom="10dp" />
 
     </LinearLayout>
 

@@ -7,6 +7,8 @@ import android.content.SharedPreferences;
 import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.speech.tts.TextToSpeech;
+import android.speech.tts.Voice;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
@@ -22,6 +24,7 @@ import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.karan.haas.models.Authorization;
@@ -49,7 +52,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -86,21 +91,15 @@ public class MainActivity extends AppCompatActivity
 
     private Context context;
 
+    // Text-to-Speech
+    private TextToSpeech tts;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        /*FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });*/
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -116,6 +115,18 @@ public class MainActivity extends AppCompatActivity
         authToken = mSharedPreferences.getString(mAuthPreferenceName, mAuthPreferenceName);
 
         context = MainActivity.this;
+
+        // Text-to-Speech engine
+        tts = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if(status != TextToSpeech.ERROR) {
+                    tts.setLanguage(Locale.UK);
+                    Object[] voices = tts.getVoices().toArray();
+                    tts.setVoice((Voice)voices[35]);
+                }
+            }
+        });
 
         basicClient = TwilioApplication.get().getBasicClient();
         if(basicClient != null) {
@@ -159,6 +170,14 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         });
+    }
+
+    public void onPause(){
+        if(tts !=null){
+            tts.stop();
+            tts.shutdown();
+        }
+        super.onPause();
     }
 
     @Override
@@ -321,7 +340,18 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onMessageAdd(final Message message) {
-        adapter.addItem(message);
+        if(message.getAuthor().equals("system")) {
+            String toSpeak = "";
+            try {
+                JSONObject reader = new JSONObject(message.getMessageBody());
+                toSpeak = reader.getString("voicemsg");
+            } catch(Exception e) {
+                // TODO: improve error handling
+                e.printStackTrace();
+            }
+            adapter.addItem(message);
+            tts.speak(toSpeak, TextToSpeech.QUEUE_FLUSH, null, null);
+        }
     }
 
     @Override

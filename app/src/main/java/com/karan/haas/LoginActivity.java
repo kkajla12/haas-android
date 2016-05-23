@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -23,6 +24,10 @@ import android.widget.TextView;
 import com.karan.haas.models.Authorization;
 import com.karan.haas.services.APIService;
 
+import java.util.Date;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -39,6 +44,7 @@ public class LoginActivity extends AppCompatActivity {
     private View mLoginFormView;
     private Context mContext;
 
+    private static final String secret = "KyRoKarMa";
     private static final String mPreferences = "HAAS";
     private static final String mAuthPreferenceName = "authToken";
     private static final String mChannelPreferenceName = "channelId";
@@ -48,6 +54,20 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        mSharedPreferences = getSharedPreferences(mPreferences, Context.MODE_PRIVATE);
+        String token = mSharedPreferences.getString(mAuthPreferenceName, mAuthPreferenceName);
+        if(!token.equals(mAuthPreferenceName)) {
+            Claims claims = Jwts.parser()
+                    .setSigningKey(secret.getBytes())
+                    .parseClaimsJws(token).getBody();
+
+            Date date = new Date();
+            if(date.compareTo(claims.getExpiration()) <= 0) {
+                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                LoginActivity.this.startActivity(intent);
+            }
+        }
 
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
@@ -83,7 +103,6 @@ public class LoginActivity extends AppCompatActivity {
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
         mContext = LoginActivity.this;
-        mSharedPreferences = getSharedPreferences(mPreferences, Context.MODE_PRIVATE);
     }
 
     /**

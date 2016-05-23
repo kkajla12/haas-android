@@ -1,5 +1,6 @@
 package com.twilio.ipmessaging.ui;
 
+import android.graphics.Color;
 import android.text.Html;
 import android.text.Spannable;
 import android.text.Spanned;
@@ -56,7 +57,7 @@ public class MessageViewHolder extends ItemViewHolder<Message> {
 
     @Override
     public void onSetValues(Message message, PositionInfo pos) {
-        StringBuilder textInfo = new StringBuilder();
+        //StringBuilder textInfo = new StringBuilder();
         if(message != null) {
             // Use for displaying message author and delivery time info
             //String dateString = message.getTimeStamp();
@@ -65,14 +66,18 @@ public class MessageViewHolder extends ItemViewHolder<Message> {
             if(message.getAuthor().equals("system")) {
                 body.setMovementMethod(LinkMovementMethod.getInstance());
                 body.setText(parseMessage(message.getMessageBody()));
-                body.setBackgroundResource(R.drawable.bubble_b);
+                body.setTextColor(Color.BLACK);
+                body.setLinkTextColor(Color.BLACK);
+                body.setBackgroundResource(R.drawable.rounded_corner_b);
                 singleMessageContainer.setGravity(Gravity.START);
                 /*if(dateString != null) {
                     textInfo.append("HaaS").append(":").append(dateString);
                 }*/
             } else {
                 body.setText(message.getMessageBody());
-                body.setBackgroundResource(R.drawable.bubble_a);
+                body.setTextColor(Color.WHITE);
+                body.setLinkTextColor(Color.WHITE);
+                body.setBackgroundResource(R.drawable.rounded_corner);
                 singleMessageContainer.setGravity(Gravity.END);
                 /*if(dateString != null) {
                     textInfo.append("You").append(":").append(dateString);
@@ -80,7 +85,6 @@ public class MessageViewHolder extends ItemViewHolder<Message> {
             }
             //txtInfo.setText(textInfo.toString());
         }
-
     }
 
     public interface OnMessageClickListener {

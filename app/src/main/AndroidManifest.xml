@@ -3,8 +3,8 @@
     package="com.karan.haas">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:name="com.twilio.ipmessaging.application.TwilioApplication"
@@ -34,17 +34,20 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.karan.haas.LoginActivity" />
         </activity>
+
+        <service
+            android:name="com.twilio.ipmessaging.TwilioIPMessagingClientService"
+            android:exported="false" />
+
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings"
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.karan.haas.MainActivity" />
         </activity>
-        <service
-            android:name="com.twilio.ipmessaging.TwilioIPMessagingClientService"
-            android:exported="false" />
     </application>
 
 </manifest>

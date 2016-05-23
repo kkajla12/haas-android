@@ -8,6 +8,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
+    android:background="@drawable/background"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.karan.haas.MainActivity"
     tools:showIn="@layout/app_bar_main">
@@ -27,7 +28,7 @@
         android:id="@+id/llSend"
         android:layout_alignParentBottom="true"
         android:layout_width="match_parent"
-        android:background="#ffffff"
+        android:background="@android:color/transparent"
         android:paddingTop="5dp"
         android:paddingBottom="5dp"
         android:paddingLeft="0dp"
