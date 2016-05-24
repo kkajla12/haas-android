@@ -68,8 +68,10 @@ public class MainActivity extends AppCompatActivity
     private static final String mPreferences = "HAAS";
     private static final String mAuthPreferenceName = "authToken";
     private static final String mChannelPreferenceName = "channelId";
+    private static final String mVoicePreferenceName = "voiceSetting";
     SharedPreferences mSharedPreferences;
     private String authToken;
+    private int voicePreference;
 
     // Twilio Authentication
     private String capabilityToken = null;
@@ -113,6 +115,8 @@ public class MainActivity extends AppCompatActivity
         mSharedPreferences = getSharedPreferences(mPreferences, Context.MODE_PRIVATE);
         // Save auth token locally
         authToken = mSharedPreferences.getString(mAuthPreferenceName, mAuthPreferenceName);
+        // Save voice preference locally
+        voicePreference = mSharedPreferences.getInt(mVoicePreferenceName, 35);
 
         context = MainActivity.this;
 
@@ -121,9 +125,9 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onInit(int status) {
                 if(status != TextToSpeech.ERROR) {
-                    tts.setLanguage(Locale.UK);
+                    tts.setLanguage(Locale.US);
                     Object[] voices = tts.getVoices().toArray();
-                    tts.setVoice((Voice)voices[35]);
+                    tts.setVoice((Voice)voices[(voicePreference == -1 ? 35 : voicePreference)]);
                 }
             }
         });
@@ -350,7 +354,10 @@ public class MainActivity extends AppCompatActivity
                 e.printStackTrace();
             }
             adapter.addItem(message);
-            tts.speak(toSpeak, TextToSpeech.QUEUE_FLUSH, null, null);
+            // speak if not set to mute
+            if(voicePreference != -1) {
+                tts.speak(toSpeak, TextToSpeech.QUEUE_FLUSH, null, null);
+            }
         }
     }
 
