@@ -31,7 +31,7 @@ import retrofit2.http.Query;
  * Created by Karan on 4/27/2016.
  */
 public interface APIService {
-    String BASE_URL = "https://haas.localtunnel.me/";
+    String BASE_URL = "https://haaas.localtunnel.me/";
 
     // Login and Register
     @FormUrlEncoded

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.DataSetObserver;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.speech.tts.TextToSpeech;
@@ -28,6 +29,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.karan.haas.models.Authorization;
+import com.karan.haas.models.ChatMessage;
 import com.karan.haas.models.User;
 import com.karan.haas.services.APIService;
 import com.twilio.ipmessaging.Channel;
@@ -45,6 +47,8 @@ import com.twilio.ipmessaging.ui.MessageViewHolder;
 import com.twilio.ipmessaging.util.BasicIPMessagingClient;
 import com.twilio.ipmessaging.util.ILoginListener;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -315,12 +319,41 @@ public class MainActivity extends AppCompatActivity
             }
         }
 
+        ArrayList<Message> newMessagesArray = new ArrayList<>();
+        for(int i = 0; i < messages.size(); i++) {
+            Message message = messages.get(i);
+            if(message.getAuthor().equals("system")) {
+                try {
+                    JSONObject reader = new JSONObject(message.getMessageBody());
+                    JSONArray links = reader.getJSONArray("links");
+                    for(int j = 0; j < links.length(); j++) {
+                        JSONObject link = links.getJSONObject(j);
+                        Message newMessage = new ChatMessage(link);
+                        newMessagesArray.add(newMessage);
+                    }
+                } catch (JSONException e) {
+
+                }
+            }
+            newMessagesArray.add(message);
+        }
+        messages = newMessagesArray;
+
         adapter = new EasyAdapter<>(this, MessageViewHolder.class, messages,
                 new MessageViewHolder.OnMessageClickListener() {
 
                     @Override
                     public void onMessageClicked(Message message) {
-                        // TODO: Implement options for deletion or edit
+                        if(message.getAuthor() == "custom") {
+                            try {
+                                JSONObject reader = new JSONObject(message.getMessageBody());
+                                String url = reader.getString("url");
+                                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                                startActivity(intent);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
                     }
                 });
 
@@ -349,14 +382,31 @@ public class MainActivity extends AppCompatActivity
             try {
                 JSONObject reader = new JSONObject(message.getMessageBody());
                 toSpeak = reader.getString("voicemsg");
-            } catch(Exception e) {
-                // TODO: improve error handling
+            } catch (Exception e) {
                 e.printStackTrace();
             }
-            adapter.addItem(message);
+
             // speak if not set to mute
             if(voicePreference != -1) {
                 tts.speak(toSpeak, TextToSpeech.QUEUE_FLUSH, null, null);
+            }
+
+            ArrayList<Message> messages = new ArrayList<>();
+            messages.add(message);
+            try {
+                JSONObject reader = new JSONObject(message.getMessageBody());
+                JSONArray links = reader.getJSONArray("links");
+                for(int i = 0; i < links.length(); i++) {
+                    JSONObject link = links.getJSONObject(i);
+                    Message newMessage = new ChatMessage(link);
+                    messages.add(newMessage);
+                }
+            } catch(Exception e) {
+                e.printStackTrace();
+            }
+
+            for(Message msg : messages) {
+                adapter.addItem(msg);
             }
         }
     }

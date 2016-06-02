@@ -1,6 +1,7 @@
 package com.twilio.ipmessaging.ui;
 
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.text.Html;
 import android.text.Spannable;
 import android.text.Spanned;
@@ -8,6 +9,7 @@ import android.text.method.LinkMovementMethod;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.karan.haas.R;
@@ -29,8 +31,14 @@ public class MessageViewHolder extends ItemViewHolder<Message> {
     @ViewId(R.id.body)
     TextView body;
 
-    /*@ViewId(R.id.txtInfo)
-    TextView txtInfo;*/
+    @ViewId(R.id.horizontalBar)
+    View horizontalBar;
+
+    @ViewId(R.id.majorInfo)
+    TextView majorInfo;
+
+    @ViewId(R.id.minorInfo)
+    TextView minorInfo;
 
     @ViewId(R.id.singleMessageContainer)
     LinearLayout singleMessageContainer;
@@ -57,33 +65,29 @@ public class MessageViewHolder extends ItemViewHolder<Message> {
 
     @Override
     public void onSetValues(Message message, PositionInfo pos) {
-        //StringBuilder textInfo = new StringBuilder();
         if(message != null) {
-            // Use for displaying message author and delivery time info
-            //String dateString = message.getTimeStamp();
-
             // Check for current author
             if(message.getAuthor().equals("system")) {
-                body.setMovementMethod(LinkMovementMethod.getInstance());
-                body.setText(parseMessage(message.getMessageBody()));
+                body.setTypeface(Typeface.DEFAULT);
                 body.setTextColor(Color.BLACK);
-                body.setLinkTextColor(Color.BLACK);
-                body.setBackgroundResource(R.drawable.rounded_corner_b);
-                singleMessageContainer.setGravity(Gravity.START);
-                /*if(dateString != null) {
-                    textInfo.append("HaaS").append(":").append(dateString);
-                }*/
+                singleMessageContainer.setBackgroundResource(R.drawable.rounded_corner_b);
+                ((LinearLayout.LayoutParams) singleMessageContainer.getLayoutParams()).gravity = Gravity.START;
+                body.setText(parseMessage(message.getMessageBody()));
+            } else if(message.getAuthor().equals("custom")) {
+                body.setTextColor(Color.BLACK);
+                singleMessageContainer.setBackgroundResource(R.drawable.rounded_corner_b);
+                ((LinearLayout.LayoutParams) singleMessageContainer.getLayoutParams()).gravity = Gravity.START;
+                parseCustomMessage(message.getMessageBody());
             } else {
+                body.setTypeface(Typeface.DEFAULT);
                 body.setText(message.getMessageBody());
                 body.setTextColor(Color.WHITE);
-                body.setLinkTextColor(Color.WHITE);
-                body.setBackgroundResource(R.drawable.rounded_corner);
-                singleMessageContainer.setGravity(Gravity.END);
-                /*if(dateString != null) {
-                    textInfo.append("You").append(":").append(dateString);
-                }*/
+                singleMessageContainer.setBackgroundResource(R.drawable.rounded_corner);
+                ((LinearLayout.LayoutParams) singleMessageContainer.getLayoutParams()).gravity = Gravity.END;
+                horizontalBar.setVisibility(View.GONE);
+                majorInfo.setVisibility(View.GONE);
+                minorInfo.setVisibility(View.GONE);
             }
-            //txtInfo.setText(textInfo.toString());
         }
     }
 
@@ -91,15 +95,51 @@ public class MessageViewHolder extends ItemViewHolder<Message> {
         void onMessageClicked(Message message);
     }
 
-    public Spanned parseMessage(String jsonMessage) {
-        String displayMessage = "";
+    public String parseMessage(String jsonMessage) {
+        String text = "";
         try {
             JSONObject reader = new JSONObject(jsonMessage);
-            displayMessage = reader.getString("msg");
+            text = reader.getString("msg");
+            horizontalBar.setVisibility(View.GONE);
+            majorInfo.setVisibility(View.GONE);
+            majorInfo.setText("");
+            minorInfo.setVisibility(View.GONE);
+            minorInfo.setText("");
         } catch (Exception e) {
             // TODO: improve error handling
             e.printStackTrace();
         }
-        return Html.fromHtml(displayMessage);
+        return text;
+    }
+
+    public void parseCustomMessage(String jsonMessage) {
+        String text;
+        String maj;
+        String min;
+        try {
+            JSONObject reader = new JSONObject(jsonMessage);
+            text = reader.getString("text");
+            body.setText(text);
+            body.setTypeface(Typeface.DEFAULT_BOLD);
+            maj = reader.getString("majorInfo");
+            if(maj.length() > 0) {
+                majorInfo.setVisibility(View.VISIBLE);
+                majorInfo.setText(Html.fromHtml(maj));
+                horizontalBar.setVisibility(View.VISIBLE);
+            } else {
+                majorInfo.setVisibility(View.GONE);
+                horizontalBar.setVisibility(View.GONE);
+            }
+            min = reader.getString("minorInfo");
+            if(min.length() > 0) {
+                minorInfo.setVisibility(View.VISIBLE);
+                minorInfo.setText(min);
+                minorInfo.setGravity(Gravity.END);
+            } else {
+                minorInfo.setVisibility(View.GONE);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

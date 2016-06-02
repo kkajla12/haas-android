@@ -3,49 +3,48 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-
     <LinearLayout
         android:id="@+id/singleMessageContainer"
-        android:layout_width="fill_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <!--<TextView
-            android:id="@+id/txtInfo"
-            android:layout_width="wrap_content"
-            android:layout_height="30sp"
-            android:layout_gravity="right"
-            android:textColor="@android:color/darker_gray"
-            android:textSize="12sp"
-            />-->
-
-        <TextView
-            android:id="@+id/body1"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:maxWidth="@dimen/max_chat_bubble_width"
-            android:layout_gravity="center"
-            android:layout_margin="5dip"
-            android:background="@drawable/rounded_corner_b"
-            android:textSize="18sp"
-            android:visibility= "gone"
-            android:paddingLeft="10dp"
-            android:paddingTop="10dp"
-            android:paddingRight="10dp"
-            android:paddingBottom="10dp" />
+        android:layout_margin="5dip"
+        android:orientation="vertical" >
 
         <TextView
             android:id="@+id/body"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_margin="5dip"
             android:maxWidth="@dimen/max_chat_bubble_width"
-            android:layout_margin="10dip"
-            android:background="@drawable/rounded_corner"
+            android:textSize="18sp" />
+
+        <View
+            android:id="@+id/horizontalBar"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:maxWidth="@dimen/max_chat_bubble_width"
+            android:background="#7f8c8d" />
+
+        <TextView
+            android:id="@+id/majorInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:layout_margin="5dip"
+            android:maxWidth="@dimen/max_chat_bubble_width"
             android:textSize="18sp"
-            android:paddingLeft="10dp"
-            android:paddingTop="10dp"
-            android:paddingRight="10dp"
-            android:paddingBottom="10dp" />
+            android:textColor="#000000" />
+
+        <TextView
+            android:id="@+id/minorInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:layout_margin="5dip"
+            android:maxWidth="@dimen/max_chat_bubble_width"
+            android:textSize="14sp"
+            android:textColor="#7f8c8d" />
 
     </LinearLayout>
 
